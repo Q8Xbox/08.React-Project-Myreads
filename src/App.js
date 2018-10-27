@@ -43,11 +43,20 @@ class BooksApp extends React.Component {
 	}
 
 	changeShelf(book, shelf) {
-		BooksAPI.update(book, shelf).then(() => {
-			BooksAPI.getAll().then((books) => {
-				this.collectBooks(books)
-			})
-		})
+		// collect all books in one list:
+		const books = [
+			...this.state.currentlyReadingBooks, 
+			...this.state.wantToReadBooks, 
+			...this.state.readBooks
+		];
+		// remove the book you want to change: 
+		const booksWithoutThisBook = books.filter(item => item !== book);
+		// update the shelf of the current book:
+		book.shelf = shelf;
+		// re-add the changed book:
+		const booksWithUpdatedBook = [...booksWithoutThisBook, book];
+		// re-run the collectBooks method:
+		this.collectBooks(booksWithUpdatedBook);
 	}
 
 	render() {

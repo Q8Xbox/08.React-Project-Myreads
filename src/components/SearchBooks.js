@@ -3,24 +3,22 @@ import * as BooksAPI from '../BooksAPI'
 import Book from './Book.js'
 import { Link } from 'react-router-dom'
 
-
 class SearchBooks extends React.Component {
 	state = {
 		query: '',
 		searchedBooks: []
 	}
-
-	updateQuery = (query) => {
-		this.setState({
-			query: query
-		})
-
+	debounce = (a,b,c) => {var d,e;return function(){function h(){d=null,c||(e=a.apply(f,g))}var f=this,g=arguments;return clearTimeout(d),d=setTimeout(h,b),c&&!d&&(e=a.apply(f,g)),e}}
+	
+	setSearchTerm = this.debounce(query => {
+		this.setState({ query })
 		this.collectSearchedBooks(query)
-	}
+    }, 500)//delay is 500ms
 
 	collectSearchedBooks = (query) => {
 		if (query) {
 			BooksAPI.search(query).then((searchResult) => {
+				console.log(searchResult);
 				if (searchResult.error) {
 					this.setState({ searchedBooks: [] })
 				} else {
@@ -75,8 +73,8 @@ class SearchBooks extends React.Component {
 						<input
 							type='text'
 							placeholder='Search by title or author'
-							value={this.state.query}
-							onChange={(event) => this.updateQuery(event.target.value)}
+							// value={this.state.query}
+							onChange={(event) => this.setSearchTerm(event.target.value)}
 						/>
 
 					</div>
@@ -89,6 +87,8 @@ class SearchBooks extends React.Component {
 			</div>
 		)
 	}
+
+	
 }
 
 export default SearchBooks
